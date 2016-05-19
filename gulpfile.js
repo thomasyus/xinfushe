@@ -6,12 +6,13 @@ var gulp = require('gulp'),
     uglify = require('gulp-uglify'),
     clean = require('gulp-clean'),
     sass = require('gulp-sass'),
-    imagemin = require('gulp-imagemin'),
+    // imagemin = require('gulp-imagemin'),
+    image = require('gulp-image'),
     pngquant = require('imagemin-pngquant'),
-    sftp = require('gulp-sftp'),
+    // imageminOptipng = require('imagemin-optipng')
+    // sftp = require('gulp-sftp'),
     notify = require('gulp-notify'),
     browserSync = require('browser-sync'),
-    cssSprite = require('gulp-css-spritesmith'),
     buildSrc = {
         'js': './assets-src/js/**/*.js',
         'css': './assets-src/css/**/*.css',
@@ -40,7 +41,7 @@ gulp.task('scss', function() {
     gulp.src(buildSrc.scss)
         .pipe(sourcemaps.init())
         .pipe(sass({ outputStyle: 'compressed' }).on('error', sass.logError))
-    .pipe(autoprefixer({
+        .pipe(autoprefixer({
             browsers: ['last 2 versions'],
             cascade: false
         }))
@@ -63,52 +64,47 @@ gulp.task('css', function() {
         .pipe(notify("css编译完成！"));
     gulp.src(buildSrc.fonts).pipe(gulp.dest(buildDest.fonts));
 });
-// 自动雪碧图
-// autoSprite, with media query
-gulp.task('autoSprite', function() {
-    gulp.src(buildSrc.css).pipe(cssSprite({
-        // sprite背景图源文件夹，只有匹配此路径才会处理，默认 images/slice/
-        imagepath: '.assets-src/css/i/slice/',
-        // 映射CSS中背景路径，支持函数和数组，默认为 null
-        imagepath_map: null,
-        // 雪碧图输出目录，注意，会覆盖之前文件！默认 images/
-        spritedest: buildSrc.img[1]+'/sprites/',
-        // 替换后的背景路径，默认 ../images/
-        spritepath: './i/sprites/',
-        // 各图片间间距，如果设置为奇数，会强制+1以保证生成的2x图片为偶数宽高，默认 0
-        padding: 2,
-        // 是否使用 image-set 作为2x图片实现，默认不使用
-        useimageset: false,
-        // 是否以时间戳为文件名生成新的雪碧图文件，如果启用请注意清理之前生成的文件，默认不生成新文件
-        newsprite: false,
-        // 给雪碧图追加时间戳，默认不追加
-        spritestamp: true,
-        // 在CSS文件末尾追加时间戳，默认不追加
-        cssstamp: true
-    }))
-    .pipe(gulp.dest(buildDest.css));
-});
-
 
 gulp.task('images', function() {
     gulp.src(buildSrc.img[0])
-        .pipe(imagemin({
+        /*.pipe(imagemin({
             progressive: true,
             svgoPlugins: [{
                 removeViewBox: false
             }],
             use: [pngquant()]
+        }))*/
+        .pipe(image({
+            pngquant: true,
+            optipng: false,
+            zopflipng: true,
+            advpng: true,
+            jpegRecompress: false,
+            jpegoptim: true,
+            mozjpeg: true,
+            gifsicle: true,
+            svgo: true
         }))
         .pipe(gulp.dest(buildDest.img[0]))
-        .pipe(browserSync.stream())
-        .pipe(notify("图片压缩完成！"));
+        .pipe(browserSync.stream());
     gulp.src(buildSrc.img[1])
-        .pipe(imagemin({
+        /*.pipe(imagemin({
             progressive: true,
             svgoPlugins: [{
                 removeViewBox: false
             }],
             use: [pngquant()]
+        }))*/
+        .pipe(image({
+            pngquant: true,
+            optipng: false,
+            zopflipng: true,
+            advpng: true,
+            jpegRecompress: false,
+            jpegoptim: true,
+            mozjpeg: true,
+            gifsicle: true,
+            svgo: true
         }))
         .pipe(gulp.dest(buildDest.img[1]))
         .pipe(browserSync.stream())
@@ -120,12 +116,13 @@ gulp.task('html', function() {
 gulp.task('clean', function() {
     gulp.src(buildDest.all).pipe(clean()).pipe(notify('清空静态资源目录'));
 });
-gulp.task('default', gulpSequence('scss', 'css', 'images', 'javascript', 'server'));
+gulp.task('default', gulpSequence('clean', 'scss', 'css', 'images', 'javascript', 'server'));
 
 gulp.task('server', function() {
     browserSync.init({
         server: "./"
     });
+
     gulp.watch(buildSrc.sass, ['scss']);
     gulp.watch(buildSrc.css, ['css']);
     gulp.watch(buildSrc.img, ['images']);
