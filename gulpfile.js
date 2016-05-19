@@ -13,6 +13,9 @@ var gulp = require('gulp'),
     // sftp = require('gulp-sftp'),
     notify = require('gulp-notify'),
     browserSync = require('browser-sync'),
+    rev = require('gulp-rev'),
+    revCollector = require('gulp-rev-collector'),
+    revReplace = require("gulp-rev-replace"),
     buildSrc = {
         'js': './assets-src/js/**/*.js',
         'css': './assets-src/css/**/*.css',
@@ -133,8 +136,23 @@ gulp.task('server', function() {
     });
 });
 
-
-
+gulp.task('hash',function() {
+    gulp.src([buildDest.all+'/**/*.css',buildDest.all+'/**/*.js'])
+    .pipe(rev())
+    .pipe(gulp.dest(buildDest.all))
+    .pipe( rev.manifest() )
+    .pipe(gulp.dest(buildDest.all));
+});
+gulp.task('rev',['hash'],function () {
+    var manifest = gulp.src(buildDest.all + "/rev-manifest.json")
+    gulp.src(['./*.jsp', './*.html'])
+        .pipe(revReplace({manifest: manifest}))
+        /*.pipe( minifyHTML({
+                empty:true,
+                spare:true
+            }) )*/
+        .pipe( gulp.dest('./assets/htmlDist') );
+});
 //打包主体build 文件夹并按照时间重命名
 // gulp.task('zip', function(){
 //       function checkTime(i) {
