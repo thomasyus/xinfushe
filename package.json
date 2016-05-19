@@ -1,49 +1,72 @@
 {
-  "name": "xfs-fe-tools",
-  "version": "1.0.3",
-  "description": "薪福社前端项目脚手架",
-  "main": "index.js",
-  "scripts": {
-    "test": "notest"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/thomasyus/xinfushe.git"
-  },
-  "keywords": [
-    "薪福社"
-  ],
-  "author": "thomas_yu",
-  "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/thomasyus/xinfushe/issues"
-  },
-  "homepage": "https://github.com/thomasyus/xinfushe#readme",
-  "dependencies": {
-    "gulp": "^3.9.1",
-    "gulp-sequence": "^0.4.4",
-    "gulp-sourcemaps": "^1.6.0",
-    "gulp-streamify": "^1.0.2",
-    "gulp-uglify": "^1.5.1",
-    "gulp-clean-css": "^2.0.7",
-    "gulp-useref": "^2.1.0",
-    "gulp-autoprefixer": "^3.1.0",
-    "gulp-css-base64": "^1.3.2",
-    "gulp-css-spriter": "^0.3.3",
-    "gulp-imagemin": "^2.4.0",
-    "imagemin-pngquant": "^5.0.0",
-    "gulp-notify": "^2.2.0",
-    "gulp-rename": "^1.2.2",
-    "gulp-sass": "^2.3.1",
-    "gulp-sftp": "^0.1.5",
-    "browser-sync": "^2.12.8"
-  },
-  "devDependencies": {
-    "gulp-image": "^1.3.1",
-    "gulp-imagemin": "^2.4.0",
-    "gulp-rev": "^7.0.0",
-    "gulp-rev-collector": "^1.0.3",
-    "gulp-rev-replace": "^0.4.3",
-    "imagemin-optipng": "^5.1.0"
-  }
+    "name": "xfs-fe-tools",
+    "version": "1.0.3",
+    "description": "薪福社前端项目脚手架",
+    "main": "index.js",
+    "scripts": {
+        "test": "notest"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/thomasyus/xinfushe.git"
+    },
+    "keywords": [
+        "薪福社"
+    ],
+    "author": "thomas_yu",
+    "license": "MIT",
+    "bugs": {
+        "url": "https://github.com/thomasyus/xinfushe/issues"
+    },
+    "homepage": "https://github.com/thomasyus/xinfushe#readme",
+    "dependencies": {
+        "gulp": "^3.9.1",
+        "gulp-sequence": "^0.4.4",
+        "gulp-sourcemaps": "^1.6.0",
+        "gulp-streamify": "^1.0.2",
+        "gulp-uglify": "^1.5.1",
+        "gulp-clean-css": "^2.0.7",
+        "gulp-useref": "^2.1.0",
+        "gulp-autoprefixer": "^3.1.0",
+        "gulp-css-base64": "^1.3.2",
+        "gulp-css-spriter": "^0.3.3",
+        "gulp-imagemin": "^2.4.0",
+        "imagemin-pngquant": "^5.0.0",
+        "gulp-notify": "^2.2.0",
+        "gulp-rename": "^1.2.2",
+        "gulp-sass": "^2.3.1",
+        "gulp-sftp": "^0.1.5",
+        "browser-sync": "^2.12.8",
+        "gulp-image": "^1.3.1",
+        "gulp-imagemin": "^2.4.0",
+        "gulp-rev": "^7.0.0",
+        "gulp-rev-collector": "^1.0.3",
+        "gulp-rev-replace": "^0.4.3",
+        "imagemin-optipng": "^5.1.0"
+    },
+    "devDependencies": {
+        "gulp": "^3.9.1",
+        "gulp-sequence": "^0.4.4",
+        "gulp-sourcemaps": "^1.6.0",
+        "gulp-streamify": "^1.0.2",
+        "gulp-uglify": "^1.5.1",
+        "gulp-clean-css": "^2.0.7",
+        "gulp-useref": "^2.1.0",
+        "gulp-autoprefixer": "^3.1.0",
+        "gulp-css-base64": "^1.3.2",
+        "gulp-css-spriter": "^0.3.3",
+        "gulp-imagemin": "^2.4.0",
+        "imagemin-pngquant": "^5.0.0",
+        "gulp-notify": "^2.2.0",
+        "gulp-rename": "^1.2.2",
+        "gulp-sass": "^2.3.1",
+        "gulp-sftp": "^0.1.5",
+        "browser-sync": "^2.12.8",
+        "gulp-image": "^1.3.1",
+        "gulp-imagemin": "^2.4.0",
+        "gulp-rev": "^7.0.0",
+        "gulp-rev-collector": "^1.0.3",
+        "gulp-rev-replace": "^0.4.3",
+        "imagemin-optipng": "^5.1.0"
+    }
 }
