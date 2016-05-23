@@ -65,8 +65,9 @@
    1. 需要安装[nodejs](http://www.nodejs.org)，按照官网要求下载nodejs安装文件，进行安装操作，安装完毕之后，启动终端 （windows系统为cmd），在当前窗口输入`npm -v`，显示出正确的版本号即为安装成功。
    2. 从github上download[项目脚手架](https://github.com/thomasyus/xinfushe/)；
    3. 重命名脚手架为自己当前项目，并且在终端命令行下cd 进入到此项目目录；
-   4. 输入`npm install`，等待安装完成；
-   5. 安装完成后，输入`gulp`，回车运行，开始愉快的编码吧~
+   4. 第一次安装依赖，需要先配置`cnpm`，然后输入`cnpm install -g`，等待安装完成；
+   5. 输入`cnpm link`关联所有依赖，到当前目录；
+   6. 安装完成后，输入`gulp`，回车运行，开始愉快的编码吧~
 
 2. #### 其他任务命令介绍
 
