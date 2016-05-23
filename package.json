@@ -21,7 +21,6 @@
     "homepage": "https://github.com/thomasyus/xinfushe#readme",
     "dependencies": {
         "gulp": "^3.9.1",
-        "gulp-sequence": "^0.4.4",
         "gulp-sourcemaps": "^1.6.0",
         "gulp-streamify": "^1.0.2",
         "gulp-uglify": "^1.5.1",
@@ -30,7 +29,6 @@
         "gulp-autoprefixer": "^3.1.0",
         "gulp-css-base64": "^1.3.2",
         "gulp-css-spriter": "^0.3.3",
-        "gulp-imagemin": "^2.4.0",
         "imagemin-pngquant": "^5.0.0",
         "gulp-notify": "^2.2.0",
         "gulp-rename": "^1.2.2",

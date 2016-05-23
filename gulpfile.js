@@ -1,5 +1,4 @@
 var gulp = require('gulp'),
-    gulpSequence = require('gulp-sequence'),
     cleanCSS = require('gulp-clean-css'),
     sourcemaps = require('gulp-sourcemaps'),
     autoprefixer = require('gulp-autoprefixer'),
@@ -37,15 +36,16 @@ gulp.task('javascript', function() {
         .pipe(uglify())
         .pipe(sourcemaps.write('./maps'))
         .pipe(gulp.dest(buildDest.js))
-        .pipe(browserSync.stream())
-        .pipe(notify("Javascript编译完成！"));
+        /*
+                .pipe(browserSync.stream())
+                .pipe(notify("Javascript编译完成！"));*/
 });
 gulp.task('scss', function() {
     gulp.src(buildSrc.scss)
         .pipe(sourcemaps.init())
         .pipe(sass({ outputStyle: 'compressed' }).on('error', sass.logError))
         .pipe(autoprefixer({
-            browsers: ['last 2 versions'],
+            browsers: ['> 0%'],
             cascade: false
         }))
         .pipe(sourcemaps.write('./maps'))
@@ -56,7 +56,7 @@ gulp.task('scss', function() {
 gulp.task('css', function() {
     gulp.src(buildSrc.css)
         .pipe(autoprefixer({
-            browsers: ['last 2 versions'],
+            browsers: ['> 0%'],
             cascade: false
         }))
         .pipe(sourcemaps.init())
@@ -119,39 +119,41 @@ gulp.task('html', function() {
 gulp.task('clean', function() {
     gulp.src(buildDest.all).pipe(clean()).pipe(notify('清空静态资源目录'));
 });
-gulp.task('default', gulpSequence('clean', 'scss', 'css', 'images', 'javascript', 'server'));
+gulp.task('default',['clean'], function(){
+    gulp.run(['scss', 'css', 'images', 'javascript', 'server']);
+});
 
 gulp.task('server', function() {
     browserSync.init({
         server: "./"
     });
 
-    gulp.watch(buildSrc.sass, ['scss']);
+    gulp.watch(buildSrc.scss, ['scss']);
     gulp.watch(buildSrc.css, ['css']);
     gulp.watch(buildSrc.img, ['images']);
     gulp.watch(buildSrc.js, ['javascript']);
     // gulp.watch(buildSrc.html, ['html']);
-    gulp.watch(buildSrc.html).on('change', function() {
-        browserSync.reload;
+    gulp.watch('./*.html').on('change', function() {
+        browserSync.reload();
     });
 });
 
-gulp.task('hash',function() {
-    gulp.src([buildDest.all+'/**/*.css',buildDest.all+'/**/*.js'])
-    .pipe(rev())
-    .pipe(gulp.dest(buildDest.all))
-    .pipe( rev.manifest() )
-    .pipe(gulp.dest(buildDest.all));
+gulp.task('hash', function() {
+    gulp.src([buildDest.all + '/**/*.css', buildDest.all + '/**/*.js'])
+        .pipe(rev())
+        .pipe(gulp.dest(buildDest.all))
+        .pipe(rev.manifest())
+        .pipe(gulp.dest(buildDest.all));
 });
-gulp.task('rev',['hash'],function () {
+gulp.task('rev', ['hash'], function() {
     var manifest = gulp.src(buildDest.all + "/rev-manifest.json")
     gulp.src(['./*.jsp', './*.html'])
-        .pipe(revReplace({manifest: manifest}))
+        .pipe(revReplace({ manifest: manifest }))
         /*.pipe( minifyHTML({
                 empty:true,
                 spare:true
             }) )*/
-        .pipe( gulp.dest('./assets/htmlDist') );
+        .pipe(gulp.dest('./assets/htmlDist'));
 });
 //打包主体build 文件夹并按照时间重命名
 // gulp.task('zip', function(){
