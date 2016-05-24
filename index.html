@@ -2,7 +2,9 @@
 <!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7" lang="zh-cmn-Hans"> <![endif]-->
 <!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8" lang="zh-cmn-Hans"> <![endif]-->
 <!--[if IE 8]>         <html class="no-js lt-ie9" lang="zh-cmn-Hans"> <![endif]-->
-<!--[if gt IE 8]><!--> <html class="no-js" lang="zh-cmn-Hans"> <!--<![endif]-->
+<!--[if gt IE 8]><!-->
+<html class="no-js" lang="zh-cmn-Hans">
+<!--<![endif]-->
 
 <head>
     <meta charset="utf-8">
@@ -22,31 +24,45 @@
     <script src="./assets/js/bootstrap/respond.min.js"></script>
     <script src="./assets/js/bootstrap/html5.js"></script>
     <![endif]-->
+  
+<link rel="stylesheet" type="text/css" href="./assets/css/ie6/style-ie6.css" />
+
 </head>
 
 <body>
-<a class="btn btn-primary" data-toggle="modal" href='#modal-id'>Trigger modal</a>
-<div class="modal fade" id="modal-id">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                <h4 class="modal-title">Modal title</h4>
-            </div>
-            <div class="modal-body">
-                
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-primary">Save changes</button>
+    <!-- <代码> -->
+    <a class="btn btn-primary" data-toggle="modal" href='#modal-id'>弹窗标题</a>
+    <div class="modal fade" id="modal-id">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title">Modal title</h4>
+                </div>
+                <div class="modal-body">
+                    弹窗内容
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                    <button type="button" class="btn btn-primary">确定</button>
+                </div>
             </div>
         </div>
     </div>
-</div>
-<script>
-    XFS.use('xfs/bs/modal');
-</script>
 
+    <script>
+        XFS.use('xfs/bs/modal');
+    </script>
+    <!-- </代码> -->
+    <script type="text/javascript" src="https://dn-bughd-web.qbox.me/bughd.min.js" crossOrigin="anonymous"></script>
+    <script type="text/javascript">
+    window.bughd = window.bughd || function() {};
+    bughd("create", {
+        key: "5ea0ee769f60b5f0433d727685d99f0d"
+    })
+    </script>
+
+<script type="text/javascript" src="./assets/js/ie6/script-ie6.js"></script>
 
 </body>
 
