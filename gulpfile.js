@@ -15,6 +15,9 @@ var gulp = require('gulp'),
     rev = require('gulp-rev'),
     revCollector = require('gulp-rev-collector'),
     revReplace = require("gulp-rev-replace"),
+    replace = require('gulp-replace'),
+ 
+
     buildSrc = {
         'js': './assets-src/js/**/*.js',
         'css': './assets-src/css/**/*.css',
@@ -24,10 +27,10 @@ var gulp = require('gulp'),
     },
     buildDest = {
         'all': './assets',
-        'js': './assets/js',
-        'css': './assets/css',
+        'js': './assets-src/js',
+        'css': './assets-src/css',
         'fonts': './assets',
-        'img': ['./assets/img', './assets/css/i']
+        'img': ['./assets-src/img', './assets-src/css/i']
     };
 
 gulp.task('javascript', function() {
@@ -113,9 +116,7 @@ gulp.task('images', function() {
         .pipe(browserSync.stream())
         .pipe(notify("图片压缩完成！"));
 });
-gulp.task('html', function() {
 
-});
 gulp.task('clean', function() {
     gulp.src(buildDest.all).pipe(clean()).pipe(notify('清空静态资源目录'));
 });
@@ -125,12 +126,13 @@ gulp.task('default',['clean'], function(){
 
 gulp.task('server', function() {
     browserSync.init({
-        server: "./"
+        server: "./",
+        directory:true
     });
 
     gulp.watch(buildSrc.scss, ['scss']);
     gulp.watch(buildSrc.css, ['css']);
-    gulp.watch(buildSrc.img, ['images']);
+    gulp.watch([buildSrc.img[0],buildSrc.img[1]], ['images']);
     gulp.watch(buildSrc.js, ['javascript']);
     // gulp.watch(buildSrc.html, ['html']);
     gulp.watch('./*.html').on('change', function() {
@@ -153,8 +155,20 @@ gulp.task('rev', ['hash'], function() {
                 empty:true,
                 spare:true
             }) )*/
-        .pipe(gulp.dest('./assets/htmlDist'));
+        .pipe(gulp.dest('./assets-src/htmlDist'));
 });
+
+gulp.task('dev', function(){
+  gulp.src(['*.{html,jsp,css,js}','!gulpfile.js'])
+    .pipe(replace('assets/', 'assets-src/'))
+    .pipe(gulp.dest('./'));
+});
+//
+gulp.task('release',function() {
+    gulp.src(['*.{html,jsp,css,js}','!gulpfile.js'])
+    .pipe(replace('assets-src/', 'assets/'))
+    .pipe(gulp.dest('./'));
+})
 //打包主体build 文件夹并按照时间重命名
 // gulp.task('zip', function(){
 //       function checkTime(i) {
