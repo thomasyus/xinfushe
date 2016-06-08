@@ -38,7 +38,9 @@ gulp.task('javascript', function() {
     .pipe(plumber())
         .pipe(sourcemaps.init())
         .pipe(uglify({
-            mangle: false
+            mangle: {
+            except: ['$', 'require', 'exports','module']
+        }
         }))
         .pipe(sourcemaps.write('./assets/maps'))
         .pipe(gulp.dest(buildDest.js))
