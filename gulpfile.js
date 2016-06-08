@@ -7,16 +7,16 @@ var gulp = require('gulp'),
     sass = require('gulp-sass'),
     // imagemin = require('gulp-imagemin'),
     image = require('gulp-image'),
-    pngquant = require('imagemin-pngquant'),
+    // pngquant = require('imagemin-pngquant'),
     // imageminOptipng = require('imagemin-optipng')
     // sftp = require('gulp-sftp'),
     notify = require('gulp-notify'),
     browserSync = require('browser-sync'),
+    plumber = require('gulp-plumber'),
     rev = require('gulp-rev'),
     revCollector = require('gulp-rev-collector'),
     revReplace = require("gulp-rev-replace"),
     replace = require('gulp-replace'),
- 
 
     buildSrc = {
         'js': './assets-src/js/**/*.js',
@@ -27,17 +27,20 @@ var gulp = require('gulp'),
     },
     buildDest = {
         'all': './assets',
-        'js': './assets-src/js',
-        'css': './assets-src/css',
+        'js': './assets/js',
+        'css': './assets/css',
         'fonts': './assets',
-        'img': ['./assets-src/img', './assets-src/css/i']
+        'img': ['./assets/img', './assets/css/i']
     };
 
 gulp.task('javascript', function() {
     gulp.src(buildSrc.js)
+    .pipe(plumber())
         .pipe(sourcemaps.init())
-        .pipe(uglify())
-        .pipe(sourcemaps.write('./maps'))
+        .pipe(uglify({
+            mangle: false
+        }))
+        .pipe(sourcemaps.write('./assets/maps'))
         .pipe(gulp.dest(buildDest.js))
         /*
                 .pipe(browserSync.stream())
@@ -51,7 +54,7 @@ gulp.task('scss', function() {
             browsers: ['> 0%'],
             cascade: false
         }))
-        .pipe(sourcemaps.write('./maps'))
+        .pipe(sourcemaps.write('./assets/maps'))
         .pipe(gulp.dest(buildDest.css))
         .pipe(browserSync.stream())
         .pipe(notify("Sass编译完成！"));
@@ -64,7 +67,7 @@ gulp.task('css', function() {
         }))
         .pipe(sourcemaps.init())
         .pipe(cleanCSS({ compatibility: 'ie8' }))
-        .pipe(sourcemaps.write('./maps'))
+        .pipe(sourcemaps.write('./assets/maps'))
         .pipe(gulp.dest(buildDest.css))
         .pipe(browserSync.stream())
         .pipe(notify("css编译完成！"));
@@ -118,21 +121,21 @@ gulp.task('images', function() {
 });
 
 gulp.task('clean', function() {
-    gulp.src(buildDest.all).pipe(clean()).pipe(notify('清空静态资源目录'));
+    gulp.src(buildDest.all).pipe(clean());
 });
-gulp.task('default',['clean'], function(){
+gulp.task('default', ['clean'], function() {
     gulp.run(['scss', 'css', 'images', 'javascript', 'server']);
 });
 
 gulp.task('server', function() {
     browserSync.init({
         server: "./",
-        directory:true
+        directory: true
     });
 
     gulp.watch(buildSrc.scss, ['scss']);
     gulp.watch(buildSrc.css, ['css']);
-    gulp.watch([buildSrc.img[0],buildSrc.img[1]], ['images']);
+    gulp.watch([buildSrc.img[0], buildSrc.img[1]], ['images']);
     gulp.watch(buildSrc.js, ['javascript']);
     // gulp.watch(buildSrc.html, ['html']);
     gulp.watch('./*.html').on('change', function() {
@@ -158,25 +161,25 @@ gulp.task('rev', ['hash'], function() {
         .pipe(gulp.dest('./assets-src/htmlDist'));
 });
 
-gulp.task('dev', function(){
-  gulp.src(['*.{html,jsp,css,js}','!gulpfile.js'])
-    .pipe(replace('assets/', 'assets-src/'))
-    .pipe(gulp.dest('./'));
+gulp.task('dev', function() {
+    gulp.src(['*.{html,jsp,css,js}', '!gulpfile.js'])
+        .pipe(replace('assets/', 'assets-src/'))
+        .pipe(gulp.dest('./'));
 });
 //
-gulp.task('release',function() {
-    gulp.src(['*.{html,jsp,css,js}','!gulpfile.js'])
-    .pipe(replace('assets-src/', 'assets/'))
-    .pipe(gulp.dest('./'));
-})
-//打包主体build 文件夹并按照时间重命名
-// gulp.task('zip', function(){
-//       function checkTime(i) {
-//           if (i < 10) {
-//               i = "0" + i
-//           }
-//           return i
-//       }
+gulp.task('release', function() {
+        gulp.src(['*.{html,jsp,css,js}', '!gulpfile.js'])
+            .pipe(replace('assets-src/', 'assets/'))
+            .pipe(gulp.dest('./'));
+    })
+    //打包主体build 文件夹并按照时间重命名
+    // gulp.task('zip', function(){
+    //       function checkTime(i) {
+    //           if (i < 10) {
+    //               i = "0" + i
+    //           }
+    //           return i
+    //       }
 
 //       var d=new Date();
 //       var year=d.getFullYear();
