@@ -35,18 +35,18 @@ var gulp = require('gulp'),
 
 gulp.task('javascript', function() {
     gulp.src(buildSrc.js)
-    .pipe(plumber())
+        .pipe(plumber())
         .pipe(sourcemaps.init())
         .pipe(uglify({
             mangle: {
-            except: ['$', 'require', 'exports','module']
-        }
+                except: ['$', 'require', 'exports', 'module']
+            }
         }))
         .pipe(sourcemaps.write('./assets/maps'))
         .pipe(gulp.dest(buildDest.js))
-        /*
+        
                 .pipe(browserSync.stream())
-                .pipe(notify("Javascript编译完成！"));*/
+                .pipe(notify("Javascript编译完成！"));
 });
 gulp.task('scss', function() {
     gulp.src(buildSrc.scss)
@@ -123,14 +123,13 @@ gulp.task('images', function() {
 });
 
 gulp.task('clean', function() {
-    gulp.src(buildDest.all).pipe(clean());
+    return gulp.src(buildDest.all).pipe(clean());
 });
-gulp.task('default', ['clean'], function() {
-    gulp.run(['scss', 'css', 'images', 'javascript', 'server']);
-});
+
 
 gulp.task('server', function() {
     browserSync.init({
+        files: "**",
         server: "./",
         directory: true
     });
@@ -144,9 +143,12 @@ gulp.task('server', function() {
         browserSync.reload();
     });
 });
+gulp.task('default', ['clean'], function(){
+    return gulp.start(['scss', 'css', 'images', 'javascript', 'server'])
+});
 
 gulp.task('hash', function() {
-    gulp.src([buildDest.all + '/**/*.css', buildDest.all + '/**/*.js'])
+    return gulp.src([buildDest.all + '/**/*.css', buildDest.all + '/**/*.js'])
         .pipe(rev())
         .pipe(gulp.dest(buildDest.all))
         .pipe(rev.manifest())
