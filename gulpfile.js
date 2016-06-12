@@ -2,6 +2,7 @@ var gulp = require('gulp'),
     cleanCSS = require('gulp-clean-css'),
     sourcemaps = require('gulp-sourcemaps'),
     autoprefixer = require('gulp-autoprefixer'),
+    cache = require('gulp-cached'),
     uglify = require('gulp-uglify'),
     clean = require('gulp-clean'),
     sass = require('gulp-sass'),
@@ -35,6 +36,8 @@ var gulp = require('gulp'),
 
 gulp.task('javascript', function() {
     gulp.src(buildSrc.js)
+    // .pipe(changedInPlace(true))
+    .pipe(cache('linting'))
         .pipe(plumber())
         .pipe(sourcemaps.init())
         .pipe(uglify({
@@ -49,7 +52,8 @@ gulp.task('javascript', function() {
                 .pipe(notify("Javascript编译完成！"));
 });
 gulp.task('scss', function() {
-    gulp.src(buildSrc.scss)
+    gulp.src(buildSrc.scss)    // .pipe(changedInPlace(true))
+    .pipe(cache('linting'))
         .pipe(sourcemaps.init())
         .pipe(sass({ outputStyle: 'compressed' }).on('error', sass.logError))
         .pipe(autoprefixer({
@@ -62,7 +66,8 @@ gulp.task('scss', function() {
         .pipe(notify("Sass编译完成！"));
 });
 gulp.task('css', function() {
-    gulp.src(buildSrc.css)
+    gulp.src(buildSrc.css)    // .pipe(changedInPlace(true))
+    .pipe(cache('linting'))
         .pipe(autoprefixer({
             browsers: ['> 0%'],
             cascade: false
@@ -77,7 +82,8 @@ gulp.task('css', function() {
 });
 
 gulp.task('images', function() {
-    gulp.src(buildSrc.img[0])
+    gulp.src(buildSrc.img[0])    // .pipe(changedInPlace(true))
+    .pipe(cache('linting'))
         /*.pipe(imagemin({
             progressive: true,
             svgoPlugins: [{
@@ -98,7 +104,8 @@ gulp.task('images', function() {
         }))
         .pipe(gulp.dest(buildDest.img[0]))
         .pipe(browserSync.stream());
-    gulp.src(buildSrc.img[1])
+    gulp.src(buildSrc.img[1])    // .pipe(changedInPlace(true))
+    .pipe(cache('linting'))
         /*.pipe(imagemin({
             progressive: true,
             svgoPlugins: [{
@@ -129,11 +136,13 @@ gulp.task('clean', function() {
 
 gulp.task('server', function() {
     browserSync.init({
-        files: "**",
         server: "./",
         directory: true
     });
-
+    gulp.run('watchTask');
+    
+});
+gulp.task('watchTask',function() {
     gulp.watch(buildSrc.scss, ['scss']);
     gulp.watch(buildSrc.css, ['css']);
     gulp.watch([buildSrc.img[0], buildSrc.img[1]], ['images']);
@@ -142,9 +151,10 @@ gulp.task('server', function() {
     gulp.watch('./*.html').on('change', function() {
         browserSync.reload();
     });
-});
+})
+
 gulp.task('default', ['clean'], function(){
-    return gulp.start(['scss', 'css', 'images', 'javascript', 'server'])
+    gulp.run(['scss', 'css', 'images', 'javascript', 'server'])
 });
 
 gulp.task('hash', function() {
