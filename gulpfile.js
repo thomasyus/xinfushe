@@ -6,8 +6,8 @@ var gulp = require('gulp'),
     uglify = require('gulp-uglify'),
     clean = require('gulp-clean'),
     sass = require('gulp-sass'),
-    // imagemin = require('gulp-imagemin'),
-    image = require('gulp-image'),
+    imagemin = require('gulp-imagemin'),
+    // image = require('gulp-image'),
     // pngquant = require('imagemin-pngquant'),
     // imageminOptipng = require('imagemin-optipng')
     // sftp = require('gulp-sftp'),
@@ -20,117 +20,91 @@ var gulp = require('gulp'),
     replace = require('gulp-replace'),
 
     buildSrc = {
-        'js': './assets-src/js/**/*.js',
-        'css': './assets-src/css/**/*.css',
-        'fonts': './assets-src/**/fonts/*',
-        'scss': './assets-src/css/**/*.scss',
-        'img': ['./assets-src/img/**/*.{png,jpg,jpeg}', './assets-src/css/i/**/*.{png,jpg,jpeg}']
+        'js': './assets-src/**/*.js',
+        'css': './assets-src/**/*.css',
+        'copy': ['./assets-src/**/*', '!*.js,!*.scss,!*.css,!*.{jpg,png,jpeg,gif,bmp}'],
+        'scss': './assets-src/**/*.scss',
+        'img': './assets-src/**/*.{jpg,png,jpeg,gif,bmp}'
     },
-    buildDest = {
-        'all': './assets',
-        'js': './assets/js',
-        'css': './assets/css',
-        'fonts': './assets',
-        'img': ['./assets/img', './assets/css/i']
-    };
+    buildDest = './assets'
 
 gulp.task('javascript', function() {
     gulp.src(buildSrc.js)
-    // .pipe(changedInPlace(true))
-    .pipe(cache('linting'))
+        // .pipe(changedInPlace(true))
+        .pipe(cache('linting'))
         .pipe(plumber())
-        .pipe(sourcemaps.init())
+        // .pipe(sourcemaps.init())
         .pipe(uglify({
             mangle: {
                 except: ['$', 'require', 'exports', 'module']
             }
         }))
-        .pipe(sourcemaps.write('./assets/maps'))
-        .pipe(gulp.dest(buildDest.js))
-        
-                .pipe(browserSync.stream())
-                .pipe(notify("Javascript编译完成！"));
+        // .pipe(sourcemaps.write('./assets/maps'))
+        .pipe(gulp.dest(buildDest))
+
+    .pipe(browserSync.stream())
+        .pipe(notify("Javascript编译完成！"));
 });
 gulp.task('scss', function() {
-    gulp.src(buildSrc.scss)    // .pipe(changedInPlace(true))
-    .pipe(cache('linting'))
-        .pipe(sourcemaps.init())
+    gulp.src(buildSrc.scss) // .pipe(changedInPlace(true))
+        .pipe(cache('linting'))
+        // .pipe(sourcemaps.init())
         .pipe(sass({ outputStyle: 'compressed' }).on('error', sass.logError))
         .pipe(autoprefixer({
             browsers: ['> 0%'],
             cascade: false
         }))
         .pipe(sourcemaps.write('./assets/maps'))
-        .pipe(gulp.dest(buildDest.css))
+        // .pipe(gulp.dest(buildDest))
         .pipe(browserSync.stream())
         .pipe(notify("Sass编译完成！"));
 });
+gulp.task('copy', function() {
+    gulp.src(buildSrc.copy).pipe(gulp.dest(buildDest));
+})
 gulp.task('css', function() {
-    gulp.src(buildSrc.css)    // .pipe(changedInPlace(true))
-    .pipe(cache('linting'))
+    gulp.src(buildSrc.css) // .pipe(changedInPlace(true))
+        .pipe(cache('linting'))
         .pipe(autoprefixer({
             browsers: ['> 0%'],
             cascade: false
         }))
-        .pipe(sourcemaps.init())
+        // .pipe(sourcemaps.init())
         .pipe(cleanCSS({ compatibility: 'ie8' }))
-        .pipe(sourcemaps.write('./assets/maps'))
-        .pipe(gulp.dest(buildDest.css))
+        // .pipe(sourcemaps.write('./assets/maps'))
+        .pipe(gulp.dest(buildDest))
         .pipe(browserSync.stream())
         .pipe(notify("css编译完成！"));
-    gulp.src(buildSrc.fonts).pipe(gulp.dest(buildDest.fonts));
 });
 
 gulp.task('images', function() {
-    gulp.src(buildSrc.img[0])    // .pipe(changedInPlace(true))
-    .pipe(cache('linting'))
-        /*.pipe(imagemin({
+    gulp.src(buildSrc.img)
+        .pipe(cache('linting'))
+        .pipe(imagemin({
             progressive: true,
             svgoPlugins: [{
                 removeViewBox: false
-            }],
-            use: [pngquant()]
-        }))*/
-        .pipe(image({
-            pngquant: true,
-            optipng: false,
-            zopflipng: true,
-            advpng: true,
-            jpegRecompress: false,
-            jpegoptim: true,
-            mozjpeg: true,
-            gifsicle: true,
-            svgo: true
+            }]
         }))
-        .pipe(gulp.dest(buildDest.img[0]))
-        .pipe(browserSync.stream());
-    gulp.src(buildSrc.img[1])    // .pipe(changedInPlace(true))
-    .pipe(cache('linting'))
-        /*.pipe(imagemin({
-            progressive: true,
-            svgoPlugins: [{
-                removeViewBox: false
-            }],
-            use: [pngquant()]
-        }))*/
-        .pipe(image({
-            pngquant: true,
-            optipng: false,
-            zopflipng: true,
-            advpng: true,
-            jpegRecompress: false,
-            jpegoptim: true,
-            mozjpeg: true,
-            gifsicle: true,
-            svgo: true
-        }))
-        .pipe(gulp.dest(buildDest.img[1]))
+        // .pipe(image({
+        //     pngquant: true,
+        //     optipng: true,
+        //     zopflipng: true,
+        //     advpng: true,
+        //     jpegRecompress: true,
+        //     jpegoptim: true,
+        //     mozjpeg: true,
+        //     gifsicle: true,
+        //     svgo: true
+        // }))
+        // .pipe(imagemin())
+        .pipe(gulp.dest(buildDest))
         .pipe(browserSync.stream())
         .pipe(notify("图片压缩完成！"));
 });
 
 gulp.task('clean', function() {
-    return gulp.src(buildDest.all).pipe(clean());
+    return gulp.src(buildDest).pipe(clean());
 });
 
 
@@ -140,12 +114,13 @@ gulp.task('server', function() {
         directory: true
     });
     gulp.run('watchTask');
-    
+
 });
-gulp.task('watchTask',function() {
+gulp.task('watchTask', function() {
     gulp.watch(buildSrc.scss, ['scss']);
     gulp.watch(buildSrc.css, ['css']);
-    gulp.watch([buildSrc.img[0], buildSrc.img[1]], ['images']);
+    gulp.watch(buildSrc.img, ['images']);
+    gulp.watch(buildSrc.copy, ['copy']);
     gulp.watch(buildSrc.js, ['javascript']);
     // gulp.watch(buildSrc.html, ['html']);
     gulp.watch('./*.html').on('change', function() {
@@ -153,19 +128,19 @@ gulp.task('watchTask',function() {
     });
 })
 
-gulp.task('default', ['clean'], function(){
-    gulp.run(['scss', 'css', 'images', 'javascript', 'server'])
+gulp.task('default', ['clean'], function() {
+    gulp.run(['scss', 'css', 'images', 'javascript', 'copy', 'server'])
 });
 
 gulp.task('hash', function() {
-    return gulp.src([buildDest.all + '/**/*.css', buildDest.all + '/**/*.js'])
+    return gulp.src([buildDest + '/**/*.css', buildDest+ '/**/*.js'])
         .pipe(rev())
-        .pipe(gulp.dest(buildDest.all))
+        .pipe(gulp.dest(buildDest))
         .pipe(rev.manifest())
-        .pipe(gulp.dest(buildDest.all));
+        .pipe(gulp.dest(buildDest));
 });
 gulp.task('rev', ['hash'], function() {
-    var manifest = gulp.src(buildDest.all + "/rev-manifest.json")
+    var manifest = gulp.src(buildDest+ "/rev-manifest.json")
     gulp.src(['./*.jsp', './*.html'])
         .pipe(revReplace({ manifest: manifest }))
         /*.pipe( minifyHTML({
