@@ -54,8 +54,8 @@ gulp.task('scss', function() {
             browsers: ['> 0%'],
             cascade: false
         }))
-        .pipe(sourcemaps.write('./assets/maps'))
-        // .pipe(gulp.dest(buildDest))
+        // .pipe(sourcemaps.write('./assets/maps'))
+        .pipe(gulp.dest(buildDest))
         .pipe(browserSync.stream())
         .pipe(notify("Sass编译完成！"));
 });
