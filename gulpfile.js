@@ -21,6 +21,8 @@
  *   browser-sync                           浏览器同步测试工具
  *   imagemin-pngquant                深度压缩png图片工具
  *   gulp-jshint                                js语法检查
+ *   gulp-watch                               监听
+ *   run-sequence                           按顺序逐个同步地运行 Gulp 任务
  *
  *   介绍一个好用的插件
  *    gulp-load-plugins                   这个插件能自动帮你加载package.json文件里的gulp插件,也就是原始插件名去掉gulp-前缀，之后再转换为驼峰命名。前提是我们装包的时候要这么装，，npm install moduleNames --save-dev 
@@ -49,18 +51,19 @@ var
     browserSync = require('browser-sync'),
     pngquant = require('imagemin-pngquant'),
     jshint = require('gulp-jshint');
+    watch = require('gulp-watch');
+    runSequence = require('run-sequence');
 // image = require('gulp-image'),
 // imageminOptipng = require('imagemin-optipng')
 // sftp = require('gulp-sftp'),
 
 /*定义源路径和目标路径*/
 /*----------------------------------------------------------------------------------------------------------------*/
-
 var  
     buildSrc = {
         'js': './assets-src/**/*.js',
         'css': './assets-src/**/*.css',
-        'copy': './assets-src/**/*.{!jpg,!png,!jpeg,!gif,!bmp,!.js,!.css,!.scss}',
+        'copy': './assets-src/**/*.{eot,svg,ttf,woff,mp3}',
         'scss': './assets-src/**/*.scss',
         'img': './assets-src/**/*.{jpg,png,jpeg,gif,bmp}'
     },
@@ -80,6 +83,7 @@ var
 gulp.task('javascript', function() {
     gulp.src(buildSrc.js)
         // .pipe(changedInPlace(true))
+        .pipe(watch(buildSrc.js))
         .pipe(cache('linting'))
         .pipe(plumber())
         // .pipe(sourcemaps.init())
@@ -94,7 +98,8 @@ gulp.task('javascript', function() {
         .pipe(notify("Javascript编译完成！"));
 });
 gulp.task('jshint',function(){
-    gulp.src([buildSrc.js,"!assets-src/js/bootstrap/*.js","!assets-src/js/ie6/*.js","!assets-src/js/plugins/*.js","!assets-src/js/lib/*.js"])
+    gulp.src([buildSrc.js,"!assets-src/js/**/*.js","!assets-src/lib/**/*.js","!assets-src/widget/**/*.js"])
+        .pipe(watch([buildSrc.js,"!assets-src/js/**/*.js","!assets-src/lib/**/*.js","!assets-src/widget/**/*.js"]))
         .pipe(cache('linting'))
         .pipe(plumber())
         .pipe(jshint())
@@ -111,6 +116,7 @@ gulp.task('jshint',function(){
 });
 gulp.task('scss', function() {
     gulp.src(buildSrc.scss) // .pipe(changedInPlace(true))
+        .pipe(watch(buildSrc.scss))
         .pipe(cache('linting'))
         // .pipe(sourcemaps.init())
         .pipe(sass({ outputStyle: 'compressed' }).on('error', sass.logError))
@@ -130,6 +136,7 @@ gulp.task('copy', function() {
 
 gulp.task('css', function() {
     gulp.src(buildSrc.css) // .pipe(changedInPlace(true))
+        .pipe(watch(buildSrc.css))
         .pipe(cache('linting'))
         .pipe(autoprefixer({
             browsers: ['> 0%'],
@@ -145,6 +152,7 @@ gulp.task('css', function() {
 
 gulp.task('images', function() {
     gulp.src(buildSrc.img)
+        .pipe(watch(buildSrc.img))
         .pipe(cache('linting'))
         .pipe(imagemin({
             progressive: true,//渐进式扫描,类型：Boolean 默认：false 无损压缩jpg图片
@@ -167,31 +175,24 @@ gulp.task('server', function() {
         server: "./",
         directory: true
     });
-    gulp.run('watchTask');
+    // gulp.run('watchTask');
 });
-
-gulp.task('watchTask', function() {
-    gulp.watch(buildSrc.js, ['jshint']);
-    gulp.watch(buildSrc.scss, ['scss']).on('change', function(event) {
-        console.log('已操作--File ' + event.path + ' was ' + event.type + ', running tasks...');
-    });
-    gulp.watch(buildSrc.css, ['css']).on('change', function(event) {
-        console.log('已操作--File ' + event.path + ' was ' + event.type + ', running tasks...');
-    });
-    gulp.watch(buildSrc.img, ['images']);
-    gulp.watch(buildSrc.copy, ['copy']);
-    gulp.watch(buildSrc.js, ['javascript']).on('change', function(event) {
-        console.log('已操作--File ' + event.path + ' was ' + event.type + ', running tasks...');
-    });
-    // gulp.watch(buildSrc.html, ['html']);
-    gulp.watch('./*.html').on('change', function() {
+gulp.task('watchTask', function () {
+    return watch(['./assets-src/**/*.{css,scss,js,jpg,png,jpeg,gif,bmp}','./*.html','!gulpfile.js'],function (event) {
         browserSync.reload();
+        console.log('已更改的文件：File ' + event.path + '  was , running tasks...');
     });
-})
-
-gulp.task('default', ['clean'], function() {
-    gulp.run(['scss', 'css', 'images', 'javascript', 'copy', 'jshint' , 'server'])
 });
+
+gulp.task('default',function() {
+    runSequence('clean',['scss', 'css', 'images', 'javascript', 'copy', 'jshint' , 'server'],'watchTask',function(){
+        console.log("Waiting...");
+    });
+});
+
+// gulp.task('default', ['clean'], function() {
+//     gulp.run(['scss', 'css', 'images', 'javascript', 'copy', 'jshint' , 'server'])
+// });
 
 /*以下哈希，版本，测试 ，发布任务还未作为默认任务执行*/
 /*----------------------------------------------------------------------------------------------------------------*/
@@ -214,13 +215,13 @@ gulp.task('rev', ['hash'], function() {
 });
 
 gulp.task('dev', function() {
-    gulp.src(['*.{html,jsp,css,js}', '!gulpfile.js'])
+    gulp.src(['**/*.{html,jsp,css,js}', '!gulpfile.js'])
         .pipe(replace('assets/', 'assets-src/'))
         .pipe(gulp.dest('./'));
 });
 //
 gulp.task('release', function() {
-    gulp.src(['*.{html,jsp,css,js}', '!gulpfile.js'])
+    gulp.src(['**/*.{html,jsp,css,scss,js}', '!gulpfile.js'])
         .pipe(replace('assets-src/', 'assets/'))
         .pipe(gulp.dest('./'));
 })
@@ -259,3 +260,23 @@ gulp.task('release', function() {
 //             remotePath: config.sftp.remotePath
 //         }));
 // });
+/*弃用自带watch*/
+/*----------------------------------------------------------------------------------------------------------------*/
+// gulp.task('watchTask', function() {
+//     gulp.watch(buildSrc.js, ['jshint']);
+//     gulp.watch(buildSrc.scss, ['scss']).on('change', function(event) {
+//         console.log('已操作--File ' + event.path + ' was ' + event.type + ', running tasks...');
+//     });
+//     gulp.watch(buildSrc.css, ['css']).on('change', function(event) {
+//         console.log('已操作--File ' + event.path + ' was ' + event.type + ', running tasks...');
+//     });
+//     gulp.watch(buildSrc.img, ['images']);
+//     gulp.watch(buildSrc.copy, ['copy']);
+//     gulp.watch(buildSrc.js, ['javascript']).on('change', function(event) {
+//         console.log('已操作--File ' + event.path + ' was ' + event.type + ', running tasks...');
+//     });
+//     // gulp.watch(buildSrc.html, ['html']);
+//     gulp.watch('./*.html').on('change', function() {
+//         browserSync.reload();
+//     });
+// })
