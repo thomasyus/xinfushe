@@ -52,18 +52,19 @@ var
     pngquant = require('imagemin-pngquant'),
     jshint = require('gulp-jshint');
     watch = require('gulp-watch');
-    runSequence = require('run-sequence');
+    runSequence = require('run-sequence').use(gulp);;
 // image = require('gulp-image'),
 // imageminOptipng = require('imagemin-optipng')
 // sftp = require('gulp-sftp'),
 
 /*定义源路径和目标路径*/
 /*----------------------------------------------------------------------------------------------------------------*/
+
 var  
     buildSrc = {
         'js': './assets-src/**/*.js',
         'css': './assets-src/**/*.css',
-        'copy': './assets-src/**/*.{eot,svg,ttf,woff,mp3}',
+        'copy': ['./assets-src/**/*.*','!*.{jpg,png,jpeg,gif,bmp,js,css,scss}'],
         'scss': './assets-src/**/*.scss',
         'img': './assets-src/**/*.{jpg,png,jpeg,gif,bmp}'
     },
@@ -119,7 +120,8 @@ gulp.task('scss', function() {
         .pipe(watch(buildSrc.scss))
         .pipe(cache('linting'))
         // .pipe(sourcemaps.init())
-        .pipe(sass({ outputStyle: 'compressed' }).on('error', sass.logError))
+        .pipe(plumber())
+        .pipe(sass({ outputStyle: 'compressed' }))
         .pipe(autoprefixer({
             browsers: ['> 0%'],
             cascade: false
@@ -178,7 +180,7 @@ gulp.task('server', function() {
     // gulp.run('watchTask');
 });
 gulp.task('watchTask', function () {
-    return watch(['./assets-src/**/*.{css,scss,js,jpg,png,jpeg,gif,bmp}','./*.html','!gulpfile.js'],function (event) {
+    return watch(['./assets-src/**/*.{css,scss,js,jpg,png,jpeg,gif,bmp}','./**/*.html','!gulpfile.js'],function (event) {
         browserSync.reload();
         console.log('已更改的文件：File ' + event.path + '  was , running tasks...');
     });
@@ -189,7 +191,11 @@ gulp.task('default',function() {
         console.log("Waiting...");
     });
 });
-
+// gulp.task('default',function() {
+//     runSequence(['scss', 'css','javascript', 'copy', 'jshint' , 'server'],'watchTask',function(){
+//         console.log("Waiting...");
+//     });
+// });
 // gulp.task('default', ['clean'], function() {
 //     gulp.run(['scss', 'css', 'images', 'javascript', 'copy', 'jshint' , 'server'])
 // });
