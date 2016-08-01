@@ -64,7 +64,7 @@ var
     buildSrc = {
         'js': './assets-src/**/*.js',
         'css': './assets-src/**/*.css',
-        'copy': ['./assets-src/**/*.*','!*.{jpg,png,jpeg,gif,bmp,js,css,scss}'],
+        'copy': './assets-src/**/*.{svg,woff,woff2,eot,ttf,mp3}',
         'scss': './assets-src/**/*.scss',
         'img': './assets-src/**/*.{jpg,png,jpeg,gif,bmp}'
     },
